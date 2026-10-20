@@ -1,0 +1,39 @@
+Categories:
+  - Time
+  - System
+License: MIT
+AuthorName: babakghl
+WebSite: https://babakghl.github.io/always-on-clock/
+SourceCode: https://github.com/babakghl/always-on-clock
+IssueTracker: https://github.com/babakghl/always-on-clock/issues
+Changelog: https://github.com/babakghl/always-on-clock/releases
+
+AutoName: Always On Clock
+
+MaintainerNotes:
+  The app intentionally builds without Gradle. build.sh drives aapt2, javac,
+  d8 and zipalign directly. Running it with UNSIGNED=1 emits the zipaligned
+  but unsigned APK at dist/AlwaysOnClock.apk, ready for F-Droid signing.
+  The build requires JDK 17 and Android SDK platform android-34 with
+  build-tools 34.0.0. Store texts and graphics live in the upstream repo
+  under fastlane/metadata. Weather uses the free Open-Meteo API by default;
+  the optional OpenWeatherMap source uses the user's own API key. The app
+  has no ads, no trackers and no non-free dependencies.
+
+RepoType: git
+Repo: https://github.com/babakghl/always-on-clock.git
+
+Builds:
+  - versionName: '3.0'
+    versionCode: 3
+    commit: bfbac2397538a01f36d8e73701a531ebe3776b3a
+    build:
+      - export JAVA_HOME=$(ls -d /usr/lib/jvm/java-17-openjdk-* 2>/dev/null | head -n 1)
+      - export ANDROID_SDK=$$SDK$$
+      - UNSIGNED=1 ./build.sh
+    output: dist/AlwaysOnClock.apk
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '3.0'
+CurrentVersionCode: 3
