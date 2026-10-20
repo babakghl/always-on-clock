@@ -1,5 +1,14 @@
 # Always On Clock
 
+![Always On Clock](docs/social-preview.png)
+
+[![Latest release](https://img.shields.io/github/v/release/babakghl/always-on-clock)](https://github.com/babakghl/always-on-clock/releases)
+[![Downloads](https://img.shields.io/github/downloads/babakghl/always-on-clock/total)](https://github.com/babakghl/always-on-clock/releases)
+[![License: MIT](https://img.shields.io/github/license/babakghl/always-on-clock)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/babakghl/always-on-clock)](https://github.com/babakghl/always-on-clock/stargazers)
+
+**[⬇ Download the APK](https://github.com/babakghl/always-on-clock/releases/download/v3.0/AlwaysOnClock.apk)** — Android 8.0+ · Free · No ads · No tracking
+
 A highly customisable always-on display (AOD) clock for Android — big readable time, date, battery and a live weather forecast, designed to sit on a nightstand or desk.
 
 ## Features
