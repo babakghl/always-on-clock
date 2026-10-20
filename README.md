@@ -22,7 +22,7 @@ A highly customisable always-on display (AOD) clock for Android — big readable
 
 ## Install
 
-Build from source (below) and install the resulting APK on your phone (Android 8.0+, minSdk 26). You'll need to allow "install from unknown sources" for your file manager/browser the first time.
+Grab the ready-made APK from the [Releases page](https://github.com/babakghl/always-on-clock/releases) and install it on your phone (Android 8.0+, minSdk 26), or build from source (below). You'll need to allow "install from unknown sources" for your file manager/browser the first time.
 
 ## Build
 
