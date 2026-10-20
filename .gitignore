@@ -1,0 +1,14 @@
+# Build output
+build/
+dist/
+*.apk
+
+# Signing key — never commit; build.sh generates one if missing
+debug.keystore
+
+# Local / IDE
+local.properties
+.gradle/
+.idea/
+*.iml
+.DS_Store

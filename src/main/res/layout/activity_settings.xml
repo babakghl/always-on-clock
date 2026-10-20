@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B0B0B"
+    android:orientation="vertical">
+
+    <!-- ===== LIVE PREVIEW ===== -->
+    <FrameLayout
+        android:id="@+id/previewRoot"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:background="#000000">
+
+        <LinearLayout
+            android:id="@+id/previewContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <com.hana.aodclock.AnalogClockView
+                android:id="@+id/previewAnalog"
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/previewDigitalRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/previewTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12:00"
+                    android:textColor="#FFFFFF"
+                    android:textSize="44sp" />
+
+                <TextView
+                    android:id="@+id/previewAmPm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:layout_marginLeft="6dp"
+                    android:text="PM"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/previewDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="#CCCCCC"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/previewBattery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textColor="#9E9E9E"
+                android:textSize="10sp" />
+
+            <LinearLayout
+                android:id="@+id/previewWeather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:alpha="0.5"
+            android:padding="8dp"
+            android:text="PREVIEW"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp" />
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <!-- ===== CATEGORY: CLOCK ===== -->
+            <TextView
+                android:id="@+id/secClockHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#161616"
+                android:padding="12dp"
+                android:text="CLOCK"
+                android:textColor="#4FC3F7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/secClockBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingRight="6dp">
+
+                <RadioGroup
+                    android:id="@+id/styleGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radioDigital"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Digital"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <RadioButton
+                        android:id="@+id/radioAnalog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="28dp"
+                        android:text="Analog"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="24-hour format"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swFormat24"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Seconds"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swSeconds"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Date"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Battery level"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swBattery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Bold text"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== CATEGORY: APPEARANCE ===== -->
+            <TextView
+                android:id="@+id/secAppearanceHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#161616"
+                android:padding="12dp"
+                android:text="APPEARANCE"
+                android:textColor="#4FC3F7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/secAppearanceBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingRight="6dp">
+
+                <TextView
+                    android:id="@+id/sizeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Clock size: 96sp"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <SeekBar
+                    android:id="@+id/sbSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="120" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Clock colour"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/colorRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Background colour"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/bgRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Font"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spFont"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:id="@+id/brightnessLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Screen brightness: 45%"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <SeekBar
+                    android:id="@+id/sbBrightness"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="95" />
+            </LinearLayout>
+
+            <!-- ===== CATEGORY: WEATHER ===== -->
+            <TextView
+                android:id="@+id/secWeatherHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#161616"
+                android:padding="12dp"
+                android:text="WEATHER"
+                android:textColor="#4FC3F7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/secWeatherBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingRight="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Show weather"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxEnabled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Data source"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spWxSource"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+
+                <EditText
+                    android:id="@+id/etApiKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="OpenWeatherMap API key"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textColor="#F5F5F5"
+                    android:textColorHint="#888888"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvWxPlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Location: Ottawa, Canada"
+                    android:textColor="#BDBDBD"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/etCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:hint="City name (e.g. Ottawa)"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textColor="#F5F5F5"
+                    android:textColorHint="#888888"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btnSetCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Set city" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Use device location"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swDeviceLoc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/wxDaysLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Forecast days: 3"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <SeekBar
+                    android:id="@+id/sbWxDays"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Forecast items"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Current temperature"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxCurrent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Condition (icon + label)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxCondition"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Daily high (max)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Daily low (min)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Precipitation chance"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxPrecip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Use Fahrenheit (°F)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swWxFahrenheit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Weather icon style"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spWxIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Refresh every"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spWxRefresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:id="@+id/wxSizeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Weather text size: 17sp"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <SeekBar
+                    android:id="@+id/sbWxSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="20" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Weather colour"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/wxColorRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <!-- ===== CATEGORY: DISPLAY & BEHAVIOUR ===== -->
+            <TextView
+                android:id="@+id/secDisplayHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#161616"
+                android:padding="12dp"
+                android:text="DISPLAY &amp; BEHAVIOUR"
+                android:textColor="#4FC3F7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/secDisplayBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingRight="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Keep screen on"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swKeepOn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Show clock only while charging"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swOnlyCharging"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Orientation"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spOrientation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="Replace phone AOD (screen saver)"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Android doesn't let apps replace the built-in always-on display directly, but this clock can be your screen saver: Android starts it automatically when the phone is charging or docked. Open the screen saver settings and choose “Always On Clock”."
+                    android:textColor="#BDBDBD"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnDreamSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Open screen saver settings" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Burn-in protection (clock drifts)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swBurnIn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/burnDistLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Move distance: 24dp"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <SeekBar
+                    android:id="@+id/sbBurnDist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:max="60" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Move every"
+                    android:textColor="#F5F5F5"
+                    android:textSize="17sp" />
+
+                <Spinner
+                    android:id="@+id/spBurnInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" />
+            </LinearLayout>
+
+            <!-- ===== CATEGORY: BACKGROUND ===== -->
+            <TextView
+                android:id="@+id/secBackgroundHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="#161616"
+                android:padding="12dp"
+                android:text="BACKGROUND"
+                android:textColor="#4FC3F7"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/secBackgroundBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingRight="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Status notification (shows the clock is running in the background)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swService"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ===== BUTTONS ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnReset"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Reset defaults" />
+
+                <Button
+                    android:id="@+id/btnDone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp"
+                    android:layout_weight="1"
+                    android:text="Back to clock" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
