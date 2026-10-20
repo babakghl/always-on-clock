@@ -1,0 +1,8 @@
+First public release.
+
+• Digital & analog clock faces, 12/24h, seconds, date, battery
+• Live weather forecast (Open-Meteo, or OpenWeatherMap with your key): 1–7 days with toggleable temperature, condition, high/low and precipitation items
+• Live settings preview and collapsible setting categories
+• Screen-saver mode to act as your always-on display while charging, plus charging-only mode
+• Background status notification with time and weather
+• Burn-in protection with adjustable distance and interval, orientation lock, weather icon styles

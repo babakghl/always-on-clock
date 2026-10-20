@@ -1,0 +1,30 @@
+Always On Clock turns your Android phone into a proper nightstand or desk clock: big readable time, date, battery and a live weather forecast — with the customisation to make it yours.
+
+CLOCK
+• Digital or analog face
+• 12 or 24-hour format, optional seconds
+• Date line and battery level with charging indicator
+• Clock size, 12 colours, 6 background colours, 6 fonts, bold toggle, in-app brightness
+
+WEATHER
+• Forecast for 1–7 days, powered by Open-Meteo (free, no API key needed) or OpenWeatherMap (your own key)
+• Toggle each item: current temperature, condition, daily high, daily low, precipitation chance
+• City search or device location
+• Celsius or Fahrenheit, adjustable refresh interval
+• Icon styles: emoji, simple symbols, or none
+
+DISPLAY & BEHAVIOUR
+• Screen-saver (Daydream) mode: set Always On Clock as your screen saver and Android starts it automatically when the phone is charging or docked — the closest an app can get to replacing the built-in always-on display
+• Charging-only mode: the clock shows only while plugged in and exits when unplugged
+• Burn-in protection: the clock face drifts by an adjustable distance (0–60 dp) at an adjustable interval (30 seconds to 5 minutes)
+• Orientation lock: auto, portrait or landscape
+• Keep-screen-on toggle
+
+BACKGROUND
+• A persistent status notification shows the clock is running, with the current time and weather, and keeps the forecast up to date
+
+SETTINGS
+• Live preview at the top of the Settings screen
+• Options grouped in collapsible categories: Clock, Appearance, Weather, Display & Behaviour, Background
+
+No ads. No tracking. No account. Open source under the MIT license.

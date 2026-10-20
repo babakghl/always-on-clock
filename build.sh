@@ -35,8 +35,16 @@ cp build/app-unsigned.apk build/app-dex.apk
 (cd build/dex && jar uf ../app-dex.apk classes.dex)
 $BT/zipalign -f 4 build/app-dex.apk build/app-aligned.apk
 
+if [ "${UNSIGNED:-0}" = "1" ]; then
+    echo "== UNSIGNED=1: skipping signing (e.g. for F-Droid, which signs it) =="
+    cp build/app-aligned.apk dist/AlwaysOnClock.apk
+    ls -la dist/AlwaysOnClock.apk
+    echo BUILD_OK
+    exit 0
+fi
+
 echo "== keystore =="
-KEYSTORE=~/workspace/aod-clock/debug.keystore
+KEYSTORE=debug.keystore
 if [ ! -f "$KEYSTORE" ]; then
     keytool -genkeypair -keystore "$KEYSTORE" \
         -storepass android -keypass android \

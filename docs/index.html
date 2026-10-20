@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Always On Clock — the always-on display your phone deserves</title>
+<meta name="description" content="A free, open-source always-on clock for Android with live weather, a screen-saver mode that takes over while charging, and burn-in protection. No ads, no tracking.">
+<meta property="og:title" content="Always On Clock">
+<meta property="og:description" content="Free, open-source AOD clock for Android with live weather and screen-saver mode. No ads, no tracking.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://babakghl.github.io/always-on-clock/">
+<meta property="og:image" content="https://babakghl.github.io/always-on-clock/social-preview.png">
+<meta name="theme-color" content="#05070a">
+<style>
+  :root{
+    --bg:#05070a; --panel:#0b1017; --line:#1c2635; --text:#eef2f7;
+    --muted:#9aa7b8; --accent:#4fc3f7; --accent-dim:#12344a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;}
+  a{color:var(--accent); text-decoration:none}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px}
+  header{display:flex; justify-content:space-between; align-items:center; padding:22px 0}
+  .brand{font-weight:700; font-size:20px; letter-spacing:.2px}
+  .brand span{color:var(--accent)}
+  .btn{display:inline-block; padding:13px 26px; border-radius:999px; font-weight:600;
+    background:var(--accent); color:#04263b; transition:transform .15s ease, box-shadow .15s ease}
+  .btn:hover{transform:translateY(-1px); box-shadow:0 8px 24px rgba(79,195,247,.25)}
+  .btn.ghost{background:transparent; color:var(--text); border:1px solid var(--line)}
+  .hero{display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center; padding:38px 0 70px}
+  .hero h1{font-size:52px; line-height:1.08; letter-spacing:-.5px}
+  .hero h1 .accent{color:var(--accent)}
+  .hero p.lede{color:var(--muted); font-size:20px; margin:20px 0 30px; max-width:34em}
+  .hero .cta{display:flex; gap:14px; flex-wrap:wrap}
+  .badges{margin-top:26px; color:var(--muted); font-size:14.5px}
+  .badges b{color:var(--text)}
+  /* phone mock */
+  .phone{margin:0 auto; width:300px; height:600px; border-radius:44px; background:#000;
+    border:2px solid #39434f; box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 90px rgba(79,195,247,.07);
+    display:flex; align-items:center; justify-content:center; overflow:hidden}
+  .face{text-align:center; transition:transform 1.2s ease; padding:0 14px}
+  .face .time{font-size:74px; font-weight:700; letter-spacing:1px; line-height:1}
+  .face .time .sec{font-size:30px; color:var(--muted); font-weight:400}
+  .face .ampm{font-size:16px; color:var(--muted)}
+  .face .date{font-size:17px; color:#cfd6de; margin-top:12px}
+  .face .batt{font-size:14px; color:#8b95a3; margin-top:5px}
+  .face hr{border:none; border-top:1px solid #22304a; width:62%; margin:22px auto}
+  .face .wx{color:var(--accent); font-size:16.5px; line-height:1.5}
+  .face .wx .now{font-size:19px; margin-bottom:6px}
+  .caption{text-align:center; color:var(--muted); font-size:13.5px; margin-top:14px}
+  section{padding:56px 0}
+  h2{font-size:31px; letter-spacing:-.3px; margin-bottom:8px}
+  .sub{color:var(--muted); margin-bottom:30px; max-width:44em}
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px}
+  .card .ic{font-size:26px}
+  .card h3{font-size:17.5px; margin:10px 0 6px}
+  .card p{color:var(--muted); font-size:15px}
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; counter-reset:step}
+  .step{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px}
+  .step .n{display:inline-flex; width:30px; height:30px; border-radius:50%;
+    background:var(--accent-dim); color:var(--accent); font-weight:700;
+    align-items:center; justify-content:center; margin-bottom:12px}
+  .step h3{font-size:16.5px; margin-bottom:6px}
+  .step p{color:var(--muted); font-size:14.5px}
+  .privacy{background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:30px; text-align:center}
+  .privacy .row{display:flex; justify-content:center; gap:34px; flex-wrap:wrap;
+    font-size:18px; font-weight:600; margin-top:8px}
+  .final{text-align:center; padding:70px 0 30px}
+  .final h2{font-size:36px}
+  footer{border-top:1px solid var(--line); padding:26px 0 40px; color:var(--muted);
+    font-size:14.5px; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr; padding-top:16px}
+    .hero h1{font-size:40px}
+    .grid{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr 1fr}
+    .phone{width:270px; height:540px}
+    .face .time{font-size:64px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">Always On <span>Clock</span></div>
+    <a class="btn ghost" href="https://github.com/babakghl/always-on-clock">GitHub</a>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>The always-on display<br>your phone <span class="accent">deserves</span>.</h1>
+      <p class="lede">Turn any Android phone into a proper nightstand clock — big readable time,
+      date, battery and a live weather forecast, shown only while it charges.
+      Free and open source. No ads, no tracking, no account.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/babakghl/always-on-clock/releases/download/v3.0/AlwaysOnClock.apk">⬇ Download the APK</a>
+        <a class="btn ghost" href="https://github.com/babakghl/always-on-clock">View the source</a>
+      </div>
+      <p class="badges"><b>Android 8.0+</b> · ~50 KB · MIT licensed · Works offline except weather</p>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="face" id="face">
+          <div><span class="time" id="clock">7:42</span> <span class="ampm" id="ampm">PM</span></div>
+          <div class="date" id="dateline">Monday, October 20</div>
+          <div class="batt">84% ⚡ charging</div>
+          <hr>
+          <div class="wx">
+            <div class="now">☀️ 21° Clear</div>
+            <div>Today&nbsp; ☀️&nbsp; 23° / 14°&nbsp; 💧10%</div>
+            <div>Tue&nbsp; 🌧️&nbsp; 19° / 11°&nbsp; 💧60%</div>
+            <div>Wed&nbsp; ⛅&nbsp; 20° / 12°&nbsp; 💧20%</div>
+          </div>
+        </div>
+      </div>
+      <p class="caption">Live clock — the weather above is a sample. Yours updates automatically.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Everything a bedside clock should do</h2>
+    <p class="sub">Built because phone makers' always-on displays won't show a real forecast,
+    and most clock apps want a subscription. This one doesn't.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🌦️</div><h3>Real weather forecast</h3>
+        <p>1–7 days from Open-Meteo — free, no API key. Toggle current temp, condition,
+        high, low and precipitation chance. City or device location, °C or °F.</p></div>
+      <div class="card"><div class="ic">💤</div><h3>Takes over while charging</h3>
+        <p>Set it as your Android screen saver and it appears automatically when the phone
+        idles on the charger — the closest an app can get to replacing the built-in AOD.</p></div>
+      <div class="card"><div class="ic">🔌</div><h3>Charging-only mode</h3>
+        <p>The clock shows only while plugged in and politely exits when you unplug.
+        Exactly how a nightstand clock should behave.</p></div>
+      <div class="card"><div class="ic">🛡️</div><h3>Burn-in protection</h3>
+        <p>The clock face drifts by an amount and interval you choose (0–60 dp,
+        every 30 s to 5 min), so no pixel sits lit all night.</p></div>
+      <div class="card"><div class="ic">🎛️</div><h3>Deeply customisable</h3>
+        <p>Digital or analog, 12 colours, 6 fonts, size, brightness, orientation lock,
+        icon styles — with a live preview in Settings and tidy collapsible categories.</p></div>
+      <div class="card"><div class="ic">🔔</div><h3>You can see it's alive</h3>
+        <p>A status notification shows the clock is running in the background,
+        with the current time and weather — and keeps the forecast fresh.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Make it your always-on display</h2>
+    <p class="sub">Android doesn't let apps replace the built-in AOD directly — the screen saver
+    route below is the supported way, and it takes about a minute.</p>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3>Install the APK</h3>
+        <p>Download it from GitHub Releases and allow installs from your browser once.</p></div>
+      <div class="step"><span class="n">2</span><h3>Open the app's Settings</h3>
+        <p>Tap the ⚙ on the clock, then “Open screen saver settings” in Display &amp; Behaviour.</p></div>
+      <div class="step"><span class="n">3</span><h3>Pick Always On Clock</h3>
+        <p>Select it as your screen saver and set it to start while charging.</p></div>
+      <div class="step"><span class="n">4</span><h3>Plug in and relax</h3>
+        <p>When the screen times out on the charger, your clock takes over.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="privacy">
+      <h2>Private by design</h2>
+      <div class="row"><span>🚫 No ads</span><span>🕵️ No tracking</span><span>👤 No account</span><span>📖 Open source (MIT)</span></div>
+      <p class="sub" style="margin:16px auto 0">Weather requests go to Open-Meteo (or OpenWeatherMap with your own key).
+      Nothing about you is collected, stored, or sold — there's no server to send it to.</p>
+    </div>
+  </section>
+
+  <div class="final">
+    <h2>Put your spare phone to work.</h2>
+    <p class="sub" style="margin:12px auto 26px">An old phone in a drawer makes a perfect always-on clock.</p>
+    <a class="btn" href="https://github.com/babakghl/always-on-clock/releases/download/v3.0/AlwaysOnClock.apk">⬇ Get Always On Clock v3.0</a>
+  </div>
+
+  <footer>
+    <div>Always On Clock · MIT licensed · Made with plain Java — no Gradle, one shell script builds it.</div>
+    <div><a href="https://github.com/babakghl/always-on-clock">GitHub</a> ·
+         <a href="https://github.com/babakghl/always-on-clock/releases">Releases</a> ·
+         <a href="https://github.com/babakghl/always-on-clock/issues">Report an issue</a></div>
+  </footer>
+</div>
+
+<script>
+  var face = document.getElementById('face');
+  function pad(n){ return (n<10?'0':'')+n; }
+  function tick(){
+    var now = new Date();
+    var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    document.getElementById('clock').innerHTML = h12 + ':' + pad(m) +
+      '<span class="sec">:' + pad(s) + '</span>';
+    document.getElementById('ampm').textContent = ampm;
+    document.getElementById('dateline').textContent =
+      now.toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
+  }
+  tick(); setInterval(tick, 1000);
+  // Burn-in drift, just like the app
+  setInterval(function(){
+    var dx = Math.round((Math.random()*12)-6), dy = Math.round((Math.random()*12)-6);
+    face.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+  }, 5000);
+</script>
+</body>
+</html>
