@@ -1,0 +1,4 @@
+• Fixed: settings are now always reachable — the clock no longer closes itself when opened with "only while charging" on, the screen saver shows a settings gear, and the status notification has a Settings button
+• New: daily schedule to turn the clock off (e.g. blank from midnight to 6am)
+• New: night brightness schedule — dim the clock automatically at night
+• New: place the clock on top, below, left or right of the weather

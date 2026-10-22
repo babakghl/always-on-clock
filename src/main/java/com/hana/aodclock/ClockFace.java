@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ public class ClockFace {
     private final Context ctx;
     private final View root;
     private final LinearLayout clockContainer;
+    private final LinearLayout clockBlock;
     private final LinearLayout digitalRow;
     private final AnalogClockView analogView;
     private final TextView timeText;
@@ -34,6 +36,11 @@ public class ClockFace {
     private final TextView dateText;
     private final TextView batteryText;
     private final LinearLayout weatherContainer;
+
+    private Window window; // optional: host window for scheduled brightness
+    private int lastAppliedBrightnessPct = -1;
+    private boolean offNow = false;
+    private int lastSchedMinute = -1;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Random random = new Random();
@@ -55,6 +62,7 @@ public class ClockFace {
         this.ctx = ctx;
         this.root = root;
         clockContainer = root.findViewById(R.id.clockContainer);
+        clockBlock = root.findViewById(R.id.clockBlock);
         digitalRow = root.findViewById(R.id.digitalRow);
         analogView = root.findViewById(R.id.analogView);
         timeText = root.findViewById(R.id.timeText);
@@ -112,7 +120,79 @@ public class ClockFace {
         lastShiftMs = System.currentTimeMillis();
         lastSecond = -1;
         lastWeatherRenderAt = -1;
+        lastSchedMinute = -1;
+        lastAppliedBrightnessPct = -1;
+        applyLayoutPosition();
         renderWeather();
+    }
+
+    /** Give the face the host window so schedules can drive its brightness. */
+    public void setWindow(Window w) {
+        window = w;
+        lastAppliedBrightnessPct = -1;
+    }
+
+    /** Arrange clock block vs weather per the position preference. */
+    private void applyLayoutPosition() {
+        clockContainer.removeView(clockBlock);
+        clockContainer.removeView(weatherContainer);
+        String pos = Prefs.clockPos(ctx);
+        float density = ctx.getResources().getDisplayMetrics().density;
+        LinearLayout.LayoutParams wp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        if (Prefs.POS_LEFT.equals(pos) || Prefs.POS_RIGHT.equals(pos)) {
+            clockContainer.setOrientation(LinearLayout.HORIZONTAL);
+            wp.leftMargin = Math.round(28 * density);
+            wp.topMargin = 0;
+            weatherContainer.setLayoutParams(wp);
+            if (Prefs.POS_LEFT.equals(pos)) {
+                clockContainer.addView(clockBlock);
+                clockContainer.addView(weatherContainer);
+            } else {
+                clockContainer.addView(weatherContainer);
+                clockContainer.addView(clockBlock);
+            }
+        } else {
+            clockContainer.setOrientation(LinearLayout.VERTICAL);
+            wp.leftMargin = 0;
+            wp.topMargin = Math.round(16 * density);
+            weatherContainer.setLayoutParams(wp);
+            if (Prefs.POS_BOTTOM.equals(pos)) {
+                clockContainer.addView(weatherContainer);
+                clockContainer.addView(clockBlock);
+            } else {
+                clockContainer.addView(clockBlock);
+                clockContainer.addView(weatherContainer);
+            }
+        }
+    }
+
+    /**
+     * Once a minute: honour the daily off-schedule (blank the face) and
+     * apply the effective (possibly night-scheduled) brightness.
+     */
+    private void applySchedule() {
+        int minute = Prefs.nowMinutes();
+        if (minute == lastSchedMinute) return;
+        lastSchedMinute = minute;
+
+        boolean off = Prefs.isOffNow(ctx);
+        if (off != offNow) {
+            offNow = off;
+            clockContainer.setVisibility(off ? View.INVISIBLE : View.VISIBLE);
+            root.setBackgroundColor(off
+                    ? android.graphics.Color.BLACK : Prefs.bgColor(ctx));
+        }
+        if (window != null) {
+            int pct = off ? 1 : Prefs.effectiveBrightness(ctx);
+            if (pct != lastAppliedBrightnessPct) {
+                lastAppliedBrightnessPct = pct;
+                android.view.WindowManager.LayoutParams lp = window.getAttributes();
+                lp.screenBrightness = pct / 100f;
+                window.setAttributes(lp);
+            }
+        }
     }
 
     private Typeface typeface() {
@@ -134,6 +214,7 @@ public class ClockFace {
     }
 
     public void update() {
+        applySchedule();
         Calendar now = Calendar.getInstance();
         int second = now.get(Calendar.SECOND);
         boolean analog = Prefs.STYLE_ANALOG.equals(Prefs.style(ctx));

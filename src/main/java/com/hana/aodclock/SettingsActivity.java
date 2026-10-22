@@ -312,6 +312,8 @@ public class SettingsActivity extends Activity {
                 "sec_open_weather", "WEATHER", false);
         setupSection(sp, R.id.secDisplayHeader, R.id.secDisplayBody,
                 "sec_open_display", "DISPLAY & BEHAVIOUR", false);
+        setupSection(sp, R.id.secScheduleHeader, R.id.secScheduleBody,
+                "sec_open_schedule", "SCHEDULE", false);
         setupSection(sp, R.id.secBackgroundHeader, R.id.secBackgroundBody,
                 "sec_open_background", "BACKGROUND", false);
 
@@ -405,6 +407,63 @@ public class SettingsActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+        // Clock position relative to weather
+        Spinner spClockPos = findViewById(R.id.spClockPos);
+        String[] posNames = {"On top of the weather", "Below the weather",
+                "Left of the weather", "Right of the weather"};
+        String[] posValues = {Prefs.POS_TOP, Prefs.POS_BOTTOM,
+                Prefs.POS_LEFT, Prefs.POS_RIGHT};
+        ArrayAdapter<String> posAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, posNames);
+        posAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spClockPos.setAdapter(posAdapter);
+        int pSel = 0;
+        for (int i = 0; i < posValues.length; i++) {
+            if (posValues[i].equals(Prefs.clockPos(this))) pSel = i;
+        }
+        spClockPos.setSelection(pSel);
+        spClockPos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.edit().putString(Prefs.KEY_CLOCK_POS, posValues[position]).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        // --- Schedule ---
+        bindSwitch(sp, R.id.swSchedOff, Prefs.KEY_SCHED_OFF, Prefs.schedOffEnabled(this));
+        bindSwitch(sp, R.id.swNightBright, Prefs.KEY_NIGHT, Prefs.nightEnabled(this));
+        bindTimeButton(sp, R.id.btnSchedOffFrom, "Off from ",
+                Prefs.KEY_SCHED_OFF_FROM, Prefs.schedOffFrom(this));
+        bindTimeButton(sp, R.id.btnSchedOffTo, "Back on ",
+                Prefs.KEY_SCHED_OFF_TO, Prefs.schedOffTo(this));
+        bindTimeButton(sp, R.id.btnNightFrom, "Dim from ",
+                Prefs.KEY_NIGHT_FROM, Prefs.nightFrom(this));
+        bindTimeButton(sp, R.id.btnNightTo, "Until ",
+                Prefs.KEY_NIGHT_TO, Prefs.nightTo(this));
+
+        // Night brightness (1..50%)
+        TextView nightBrightLabel = findViewById(R.id.nightBrightLabel);
+        SeekBar sbNightBright = findViewById(R.id.sbNightBright);
+        sbNightBright.setProgress(Prefs.nightBrightness(this) - 1);
+        nightBrightLabel.setText("Night brightness: " + Prefs.nightBrightness(this) + "%");
+        sbNightBright.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+                int value = progress + 1;
+                nightBrightLabel.setText("Night brightness: " + value + "%");
+                sp.edit().putInt(Prefs.KEY_NIGHT_BRIGHTNESS, value).apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar bar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar bar) { }
+        });
+
         // Screen saver (AOD replacement) settings
         findViewById(R.id.btnDreamSettings).setOnClickListener(v -> {
             try {
@@ -436,6 +495,28 @@ public class SettingsActivity extends Activity {
         sw.setChecked(current);
         sw.setOnCheckedChangeListener((buttonView, isChecked) ->
                 sp.edit().putBoolean(key, isChecked).apply());
+    }
+
+    /** A button showing "Label HH:MM" that opens a time picker and saves minutes-of-day. */
+    private void bindTimeButton(SharedPreferences sp, int id, String label,
+                                String key, int currentMinutes) {
+        android.widget.Button btn = findViewById(id);
+        btn.setText(label + formatMinutes(currentMinutes));
+        btn.setOnClickListener(v -> {
+            int cur = sp.getInt(key, currentMinutes);
+            boolean is24 = android.text.format.DateFormat.is24HourFormat(this);
+            new android.app.TimePickerDialog(this,
+                    (view, hour, minute) -> {
+                        int value = hour * 60 + minute;
+                        sp.edit().putInt(key, value).apply();
+                        btn.setText(label + formatMinutes(value));
+                    }, cur / 60, cur % 60, is24).show();
+        });
+    }
+
+    private static String formatMinutes(int minutes) {
+        return String.format(Locale.getDefault(), "%02d:%02d",
+                minutes / 60, minutes % 60);
     }
 
     private void buildSwatches(SharedPreferences sp, int rowId, int[] colors,

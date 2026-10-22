@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         face = new ClockFace(this, findViewById(R.id.root));
+        face.setWindow(getWindow());
         findViewById(R.id.settingsBtn).setOnClickListener(v ->
                 startActivity(new Intent(this, SettingsActivity.class)));
 
@@ -51,13 +52,9 @@ public class MainActivity extends Activity {
         face.start();
         registerReceiver(powerReceiver,
                 new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
-        // Charging-only mode: leave if we're not plugged in
-        if (Prefs.onlyCharging(this) && !ClockFace.isCharging(this)) {
-            Toast.makeText(this,
-                    "Charging-only mode is on — plug in to show the clock",
-                    Toast.LENGTH_LONG).show();
-            exitClock();
-        }
+        // Charging-only mode: a manual open always works (settings must stay
+        // reachable) — the clock only auto-exits on unplug, via the receiver
+        // above. It no longer closes itself on open when unplugged.
         // If the background service is off, refresh weather from here
         if (Prefs.wxEnabled(this) && !Prefs.serviceEnabled(this)
                 && WeatherStore.isStale(this)) {
@@ -105,7 +102,7 @@ public class MainActivity extends Activity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.screenBrightness = Prefs.brightness(this) / 100f;
+        lp.screenBrightness = Prefs.effectiveBrightness(this) / 100f;
         getWindow().setAttributes(lp);
     }
 

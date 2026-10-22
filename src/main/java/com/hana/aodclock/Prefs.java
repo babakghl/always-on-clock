@@ -54,6 +54,21 @@ public class Prefs {
     public static final String KEY_BURN_INTERVAL = "burn_interval"; // seconds
     public static final String KEY_WX_ICON_STYLE = "wx_icon_style"; // emoji | symbol | none
 
+    // Schedule & layout (v4)
+    public static final String KEY_SCHED_OFF = "sched_off_enabled";
+    public static final String KEY_SCHED_OFF_FROM = "sched_off_from"; // minutes of day
+    public static final String KEY_SCHED_OFF_TO = "sched_off_to";     // minutes of day
+    public static final String KEY_NIGHT = "night_bright_enabled";
+    public static final String KEY_NIGHT_FROM = "night_from";         // minutes of day
+    public static final String KEY_NIGHT_TO = "night_to";             // minutes of day
+    public static final String KEY_NIGHT_BRIGHTNESS = "night_brightness"; // percent 1..100
+    public static final String KEY_CLOCK_POS = "clock_pos"; // clock position relative to weather
+
+    public static final String POS_TOP = "top";       // clock above weather (default)
+    public static final String POS_BOTTOM = "bottom"; // clock below weather
+    public static final String POS_LEFT = "left";     // clock left of weather
+    public static final String POS_RIGHT = "right";   // clock right of weather
+
     public static final String ORIENT_AUTO = "auto";
     public static final String ORIENT_PORTRAIT = "portrait";
     public static final String ORIENT_LANDSCAPE = "landscape";
@@ -255,6 +270,71 @@ public class Prefs {
 
     public static String wxIconStyle(Context c) {
         return sp(c).getString(KEY_WX_ICON_STYLE, ICON_EMOJI);
+    }
+
+    // --- Schedule & layout accessors (v4) ---
+
+    public static boolean schedOffEnabled(Context c) {
+        return sp(c).getBoolean(KEY_SCHED_OFF, false);
+    }
+
+    public static int schedOffFrom(Context c) {
+        return sp(c).getInt(KEY_SCHED_OFF_FROM, 0); // 00:00
+    }
+
+    public static int schedOffTo(Context c) {
+        return sp(c).getInt(KEY_SCHED_OFF_TO, 360); // 06:00
+    }
+
+    public static boolean nightEnabled(Context c) {
+        return sp(c).getBoolean(KEY_NIGHT, false);
+    }
+
+    public static int nightFrom(Context c) {
+        return sp(c).getInt(KEY_NIGHT_FROM, 1320); // 22:00
+    }
+
+    public static int nightTo(Context c) {
+        return sp(c).getInt(KEY_NIGHT_TO, 360); // 06:00
+    }
+
+    public static int nightBrightness(Context c) {
+        return sp(c).getInt(KEY_NIGHT_BRIGHTNESS, 10);
+    }
+
+    public static String clockPos(Context c) {
+        return sp(c).getString(KEY_CLOCK_POS, POS_TOP);
+    }
+
+    /** True if minute-of-day `now` falls inside [from, to); wraps past midnight. */
+    public static boolean inWindow(int from, int to, int now) {
+        if (from == to) return false;
+        if (from < to) return now >= from && now < to;
+        return now >= from || now < to;
+    }
+
+    public static int nowMinutes() {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        return cal.get(java.util.Calendar.HOUR_OF_DAY) * 60
+                + cal.get(java.util.Calendar.MINUTE);
+    }
+
+    /** True when the daily off-schedule is enabled and active right now. */
+    public static boolean isOffNow(Context c) {
+        return schedOffEnabled(c)
+                && inWindow(schedOffFrom(c), schedOffTo(c), nowMinutes());
+    }
+
+    /** True when the nightly brightness schedule is enabled and active. */
+    public static boolean isNightNow(Context c) {
+        return nightEnabled(c)
+                && inWindow(nightFrom(c), nightTo(c), nowMinutes());
+    }
+
+    /** Brightness percent to actually use right now (night schedule wins). */
+    public static int effectiveBrightness(Context c) {
+        if (isNightNow(c)) return nightBrightness(c);
+        return brightness(c);
     }
 
     public static void reset(Context c) {

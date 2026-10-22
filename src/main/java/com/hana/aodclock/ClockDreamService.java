@@ -30,15 +30,31 @@ public class ClockDreamService extends DreamService {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setInteractive(false);
+        setInteractive(true);
         setFullscreen(true);
         setScreenBright(true);
         setContentView(R.layout.activity_main);
 
-        View gear = findViewById(R.id.settingsBtn);
-        if (gear != null) gear.setVisibility(View.GONE);
-
         face = new ClockFace(this, findViewById(R.id.root));
+        face.setWindow(getWindow());
+
+        // While the screen saver runs (e.g. charging on a dock), settings
+        // must stay reachable: the gear stays visible and opens Settings;
+        // a tap anywhere else wakes the phone as usual.
+        View gear = findViewById(R.id.settingsBtn);
+        if (gear != null) {
+            gear.setVisibility(View.VISIBLE);
+            gear.setOnClickListener(v -> {
+                Intent i = new Intent(this, SettingsActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
+            });
+        }
+        View rootView = findViewById(R.id.root);
+        if (rootView != null) {
+            rootView.setOnClickListener(v -> finish());
+        }
     }
 
     @Override
@@ -46,7 +62,7 @@ public class ClockDreamService extends DreamService {
         super.onDreamingStarted();
         // Honour the in-app brightness preference on the dream window too
         WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.screenBrightness = Prefs.brightness(this) / 100f;
+        lp.screenBrightness = Prefs.effectiveBrightness(this) / 100f;
         getWindow().setAttributes(lp);
 
         if (Prefs.onlyCharging(this) && !ClockFace.isCharging(this)) {

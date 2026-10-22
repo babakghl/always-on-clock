@@ -10,8 +10,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/clockBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
         <com.hana.aodclock.AnalogClockView
             android:id="@+id/analogView"
@@ -60,6 +67,7 @@
             android:layout_marginTop="10dp"
             android:textColor="#9E9E9E"
             android:textSize="16sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/weatherContainer"

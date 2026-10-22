@@ -106,11 +106,16 @@ public class ClockService extends Service {
         PendingIntent pi = PendingIntent.getActivity(this, 0, open,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent settings = new Intent(this, SettingsActivity.class);
+        PendingIntent settingsPi = PendingIntent.getActivity(this, 1, settings,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
         return new Notification.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Always On Clock · " + time)
                 .setContentText(text.toString())
                 .setContentIntent(pi)
+                .addAction(0, "Settings", settingsPi)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setCategory(Notification.CATEGORY_SERVICE)
