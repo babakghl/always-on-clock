@@ -58,7 +58,7 @@ public class Prefs {
     public static final String KEY_BURN_INTERVAL = "burn_interval"; // seconds
     public static final String KEY_WX_ICON_STYLE = "wx_icon_style"; // emoji | symbol | none
 
-    // Schedule & layout (v4)
+    // Schedule (v4)
     public static final String KEY_SCHED_OFF = "sched_off_enabled";
     public static final String KEY_SCHED_OFF_FROM = "sched_off_from"; // minutes of day
     public static final String KEY_SCHED_OFF_TO = "sched_off_to";     // minutes of day
@@ -66,12 +66,9 @@ public class Prefs {
     public static final String KEY_NIGHT_FROM = "night_from";         // minutes of day
     public static final String KEY_NIGHT_TO = "night_to";             // minutes of day
     public static final String KEY_NIGHT_BRIGHTNESS = "night_brightness"; // percent 1..100
-    public static final String KEY_CLOCK_POS = "clock_pos"; // clock position relative to weather
-
-    public static final String POS_TOP = "top";       // clock above weather (default)
-    public static final String POS_BOTTOM = "bottom"; // clock below weather
-    public static final String POS_LEFT = "left";     // clock left of weather
-    public static final String POS_RIGHT = "right";   // clock right of weather
+    // Layout is automatic since v5.1 (portrait: clock / weather / chart stacked;
+    // landscape: clock / weather / chart side by side) — the old clock_pos
+    // preference from v4-v5.0 is no longer read.
 
     public static final String ORIENT_AUTO = "auto";
     public static final String ORIENT_PORTRAIT = "portrait";
@@ -328,10 +325,6 @@ public class Prefs {
 
     public static int nightBrightness(Context c) {
         return sp(c).getInt(KEY_NIGHT_BRIGHTNESS, 10);
-    }
-
-    public static String clockPos(Context c) {
-        return sp(c).getString(KEY_CLOCK_POS, POS_TOP);
     }
 
     /** True if minute-of-day `now` falls inside [from, to); wraps past midnight. */

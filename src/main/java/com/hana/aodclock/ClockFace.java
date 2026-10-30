@@ -36,6 +36,8 @@ public class ClockFace {
     private final TextView dateText;
     private final TextView batteryText;
     private final LinearLayout weatherContainer;
+    private final WeatherChartView chartView;
+    private int lastOrientation = -1; // Configuration.ORIENTATION_* last laid out for
 
     private Window window; // optional: host window for scheduled brightness
     private int lastAppliedBrightnessPct = -1;
@@ -70,6 +72,8 @@ public class ClockFace {
         dateText = root.findViewById(R.id.dateText);
         batteryText = root.findViewById(R.id.batteryText);
         weatherContainer = root.findViewById(R.id.weatherContainer);
+        chartView = new WeatherChartView(ctx);
+        chartView.setVisibility(View.GONE);
     }
 
     public static boolean isCharging(Context ctx) {
@@ -132,39 +136,70 @@ public class ClockFace {
         lastAppliedBrightnessPct = -1;
     }
 
-    /** Arrange clock block vs weather per the position preference. */
+    private boolean isLandscape() {
+        int o = ctx.getResources().getConfiguration().orientation;
+        if (o == android.content.res.Configuration.ORIENTATION_LANDSCAPE) return true;
+        if (o == android.content.res.Configuration.ORIENTATION_PORTRAIT) return false;
+        return ctx.getResources().getDisplayMetrics().widthPixels
+                > ctx.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    /**
+     * Automatic layout (v5.1) — no manual position option:
+     * portrait: clock on top, weather in the middle, chart at the bottom;
+     * landscape: clock on the left, weather in the middle, chart on the right.
+     * The chart is only in the order when it is visible.
+     */
     private void applyLayoutPosition() {
+        boolean landscape = isLandscape();
+        lastOrientation = landscape
+                ? android.content.res.Configuration.ORIENTATION_LANDSCAPE
+                : android.content.res.Configuration.ORIENTATION_PORTRAIT;
         clockContainer.removeView(clockBlock);
         clockContainer.removeView(weatherContainer);
-        String pos = Prefs.clockPos(ctx);
+        clockContainer.removeView(chartView);
         float density = ctx.getResources().getDisplayMetrics().density;
+        int screenW = ctx.getResources().getDisplayMetrics().widthPixels;
+
         LinearLayout.LayoutParams wp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        if (Prefs.POS_LEFT.equals(pos) || Prefs.POS_RIGHT.equals(pos)) {
+        LinearLayout.LayoutParams cp;
+        if (landscape) {
             clockContainer.setOrientation(LinearLayout.HORIZONTAL);
             wp.leftMargin = Math.round(28 * density);
             wp.topMargin = 0;
-            weatherContainer.setLayoutParams(wp);
-            if (Prefs.POS_LEFT.equals(pos)) {
-                clockContainer.addView(clockBlock);
-                clockContainer.addView(weatherContainer);
-            } else {
-                clockContainer.addView(weatherContainer);
-                clockContainer.addView(clockBlock);
-            }
+            int chartW = Math.min(Math.round(300 * density),
+                    Math.round(screenW * 0.30f));
+            cp = new LinearLayout.LayoutParams(chartW, Math.round(170 * density));
+            cp.leftMargin = Math.round(28 * density);
+            cp.topMargin = 0;
         } else {
             clockContainer.setOrientation(LinearLayout.VERTICAL);
             wp.leftMargin = 0;
             wp.topMargin = Math.round(16 * density);
-            weatherContainer.setLayoutParams(wp);
-            if (Prefs.POS_BOTTOM.equals(pos)) {
-                clockContainer.addView(weatherContainer);
-                clockContainer.addView(clockBlock);
-            } else {
-                clockContainer.addView(clockBlock);
-                clockContainer.addView(weatherContainer);
-            }
+            int chartW = Math.min(Math.round(340 * density),
+                    Math.round(screenW * 0.92f));
+            cp = new LinearLayout.LayoutParams(chartW, Math.round(132 * density));
+            cp.leftMargin = 0;
+            cp.topMargin = Math.round(10 * density);
+        }
+        weatherContainer.setLayoutParams(wp);
+        chartView.setLayoutParams(cp);
+        clockContainer.addView(clockBlock);
+        clockContainer.addView(weatherContainer);
+        clockContainer.addView(chartView);
+    }
+
+    /** Re-lay out if the screen rotated since the last frame. */
+    private void checkOrientationChange() {
+        int o = isLandscape()
+                ? android.content.res.Configuration.ORIENTATION_LANDSCAPE
+                : android.content.res.Configuration.ORIENTATION_PORTRAIT;
+        if (lastOrientation != -1 && o != lastOrientation) {
+            applyLayoutPosition();
+            lastWeatherRenderAt = -1;
+            renderWeather();
         }
     }
 
@@ -215,6 +250,7 @@ public class ClockFace {
 
     public void update() {
         applySchedule();
+        checkOrientationChange();
         Calendar now = Calendar.getInstance();
         int second = now.get(Calendar.SECOND);
         boolean analog = Prefs.STYLE_ANALOG.equals(Prefs.style(ctx));
@@ -286,12 +322,14 @@ public class ClockFace {
         weatherContainer.removeAllViews();
         if (!Prefs.wxEnabled(ctx)) {
             weatherContainer.setVisibility(View.GONE);
+            chartView.setVisibility(View.GONE);
             return;
         }
         WeatherStore.Model m = WeatherStore.load(ctx);
         lastWeatherRenderAt = WeatherStore.cacheTime(ctx);
         if (m == null) {
             weatherContainer.setVisibility(View.GONE);
+            chartView.setVisibility(View.GONE);
             return;
         }
         weatherContainer.setVisibility(View.VISIBLE);
@@ -351,20 +389,15 @@ public class ClockFace {
             weatherContainer.addView(wxText(sb.toString(), wxColor, wxSize, tf, 4));
         }
 
-        // Simple chart (v5): temp high/low lines + precipitation bars,
-        // for the same forecast days shown above.
+        // Simple chart (v5, own block since v5.1): temp high/low lines +
+        // precipitation bars, for the same forecast days shown above.
+        // Position comes from applyLayoutPosition(): below the weather in
+        // portrait, to the right of it in landscape.
         if (Prefs.wxShowChart(ctx) && days > 0) {
-            float density = ctx.getResources().getDisplayMetrics().density;
-            int screenW = ctx.getResources().getDisplayMetrics().widthPixels;
-            int chartW = Math.min(Math.round(340 * density),
-                    Math.round(screenW * 0.92f));
-            WeatherChartView chart = new WeatherChartView(ctx);
-            chart.setData(m.names, m.max, m.min, m.pop, days, wxColor);
-            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
-                    chartW, Math.round(132 * density));
-            cp.topMargin = Math.round(10 * density);
-            chart.setLayoutParams(cp);
-            weatherContainer.addView(chart);
+            chartView.setData(m.names, m.max, m.min, m.pop, days, wxColor);
+            chartView.setVisibility(View.VISIBLE);
+        } else {
+            chartView.setVisibility(View.GONE);
         }
     }
 

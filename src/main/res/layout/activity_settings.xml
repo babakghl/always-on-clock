@@ -736,19 +736,6 @@
                         android:orientation="horizontal" />
                 </HorizontalScrollView>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="Clock position (relative to weather)"
-                    android:textColor="#F5F5F5"
-                    android:textSize="17sp" />
-
-                <Spinner
-                    android:id="@+id/spClockPos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp" />
             </LinearLayout>
 
             <!-- ===== CATEGORY: DISPLAY & BEHAVIOUR ===== -->

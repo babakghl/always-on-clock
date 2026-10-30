@@ -1,0 +1,3 @@
+• Removed: the manual clock-position option (top / bottom / left / right of the weather)
+• New: layout is automatic — in portrait the clock is on top, the weather in the middle and the chart (when on) at the bottom; in landscape the clock is on the left, the weather in the middle and the chart on the right
+• The chart is now its own block beside/below the weather instead of part of the weather text block, and the layout re-arranges itself when you rotate the phone

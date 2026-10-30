@@ -429,31 +429,6 @@ public class SettingsActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        // Clock position relative to weather
-        Spinner spClockPos = findViewById(R.id.spClockPos);
-        String[] posNames = {"On top of the weather", "Below the weather",
-                "Left of the weather", "Right of the weather"};
-        String[] posValues = {Prefs.POS_TOP, Prefs.POS_BOTTOM,
-                Prefs.POS_LEFT, Prefs.POS_RIGHT};
-        ArrayAdapter<String> posAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, posNames);
-        posAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spClockPos.setAdapter(posAdapter);
-        int pSel = 0;
-        for (int i = 0; i < posValues.length; i++) {
-            if (posValues[i].equals(Prefs.clockPos(this))) pSel = i;
-        }
-        spClockPos.setSelection(pSel);
-        spClockPos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sp.edit().putString(Prefs.KEY_CLOCK_POS, posValues[position]).apply();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-
         // --- Schedule ---
         bindSwitch(sp, R.id.swSchedOff, Prefs.KEY_SCHED_OFF, Prefs.schedOffEnabled(this));
         bindSwitch(sp, R.id.swNightBright, Prefs.KEY_NIGHT, Prefs.nightEnabled(this));
