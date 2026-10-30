@@ -17,7 +17,7 @@ WEATHER
 DISPLAY & BEHAVIOUR
 • Screen-saver (Daydream) mode: set Always On Clock as your screen saver and Android starts it automatically when the phone is charging or docked — the closest an app can get to replacing the built-in always-on display
 • Charging-only mode: the clock shows only while plugged in and exits when unplugged
-• Burn-in protection: the clock face drifts by an adjustable distance (0–60 dp) at an adjustable interval (30 seconds to 5 minutes)
+• Burn-in protection: the clock face drifts by an adjustable distance (0–60 dp) at an adjustable interval (30 seconds to 5 minutes), always clamped so everything stays on screen; optionally the clock swaps ends at each move (top/bottom in portrait, left/right in landscape)
 • Orientation lock: auto, portrait or landscape
 • Keep-screen-on toggle
 

@@ -56,6 +56,7 @@ public class Prefs {
     public static final String KEY_ONLY_CHARGING = "only_charging";
     public static final String KEY_BURN_DISTANCE = "burn_distance"; // dp, 0..60
     public static final String KEY_BURN_INTERVAL = "burn_interval"; // seconds
+    public static final String KEY_FLIP_CLOCK = "flip_clock_on_move"; // v5.2
     public static final String KEY_WX_ICON_STYLE = "wx_icon_style"; // emoji | symbol | none
 
     // Schedule (v4)
@@ -291,6 +292,14 @@ public class Prefs {
 
     public static int burnInterval(Context c) {
         return sp(c).getInt(KEY_BURN_INTERVAL, 60);
+    }
+
+    /**
+     * At each burn-in move, swap the clock to the other end: top ↔ bottom
+     * in portrait, left ↔ right in landscape (weather stays in the middle).
+     */
+    public static boolean flipClockOnMove(Context c) {
+        return sp(c).getBoolean(KEY_FLIP_CLOCK, false);
     }
 
     public static String wxIconStyle(Context c) {

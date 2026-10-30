@@ -1,0 +1,2 @@
+• Fixed: burn-in drift could push content off the edge of the screen — the drift is now clamped to the free space around the face on each axis (and pulled back inside if content grows or the phone rotates), so everything always stays fully visible
+• New: "Swap clock position at each burn-in move" option — the clock alternates top ↔ bottom in portrait and left ↔ right in landscape at each move, with the weather always in the middle

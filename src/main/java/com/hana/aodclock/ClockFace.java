@@ -38,6 +38,7 @@ public class ClockFace {
     private final LinearLayout weatherContainer;
     private final WeatherChartView chartView;
     private int lastOrientation = -1; // Configuration.ORIENTATION_* last laid out for
+    private boolean clockFlipped = false; // clock swapped to the other end (v5.2)
 
     private Window window; // optional: host window for scheduled brightness
     private int lastAppliedBrightnessPct = -1;
@@ -126,6 +127,7 @@ public class ClockFace {
         lastWeatherRenderAt = -1;
         lastSchedMinute = -1;
         lastAppliedBrightnessPct = -1;
+        clockFlipped = false;
         applyLayoutPosition();
         renderWeather();
     }
@@ -186,9 +188,18 @@ public class ClockFace {
         }
         weatherContainer.setLayoutParams(wp);
         chartView.setLayoutParams(cp);
-        clockContainer.addView(clockBlock);
-        clockContainer.addView(weatherContainer);
-        clockContainer.addView(chartView);
+        // Weather always stays in the middle. Normally the clock leads
+        // (top in portrait, left in landscape); when flipped (burn-in move
+        // option) the clock trades ends with the chart.
+        if (clockFlipped) {
+            clockContainer.addView(chartView);
+            clockContainer.addView(weatherContainer);
+            clockContainer.addView(clockBlock);
+        } else {
+            clockContainer.addView(clockBlock);
+            clockContainer.addView(weatherContainer);
+            clockContainer.addView(chartView);
+        }
     }
 
     /** Re-lay out if the screen rotated since the last frame. */
@@ -197,6 +208,11 @@ public class ClockFace {
                 ? android.content.res.Configuration.ORIENTATION_LANDSCAPE
                 : android.content.res.Configuration.ORIENTATION_PORTRAIT;
         if (lastOrientation != -1 && o != lastOrientation) {
+            // A drift that was safe in the old orientation may push the
+            // face off screen in the new one — start centred again.
+            clockContainer.animate().cancel();
+            clockContainer.setTranslationX(0);
+            clockContainer.setTranslationY(0);
             applyLayoutPosition();
             lastWeatherRenderAt = -1;
             renderWeather();
@@ -251,6 +267,7 @@ public class ClockFace {
     public void update() {
         applySchedule();
         checkOrientationChange();
+        enforceInsideBounds();
         Calendar now = Calendar.getInstance();
         int second = now.get(Calendar.SECOND);
         boolean analog = Prefs.STYLE_ANALOG.equals(Prefs.style(ctx));
@@ -416,16 +433,74 @@ public class ClockFace {
         return tv;
     }
 
+    /**
+     * Largest safe drift on each axis: the face is centred, so it can move
+     * at most half the slack between its own size and the screen size,
+     * minus a small safety margin. Zero when the face fills the screen.
+     */
+    private float maxShiftX() {
+        int rw = root.getWidth();
+        int cw = clockContainer.getWidth();
+        if (rw <= 0 || cw <= 0) return 0;
+        float margin = 8 * ctx.getResources().getDisplayMetrics().density;
+        return Math.max(0, (rw - cw) / 2f - margin);
+    }
+
+    private float maxShiftY() {
+        int rh = root.getHeight();
+        int ch = clockContainer.getHeight();
+        if (rh <= 0 || ch <= 0) return 0;
+        float margin = 8 * ctx.getResources().getDisplayMetrics().density;
+        return Math.max(0, (rh - ch) / 2f - margin);
+    }
+
+    private static float clamp(float v, float max) {
+        return Math.max(-max, Math.min(max, v));
+    }
+
+    /**
+     * Guarantee the whole face stays on screen: if the current drift is
+     * outside the safe range (content grew, rotation, bigger chart, ...),
+     * pull it back inside immediately.
+     */
+    private void enforceInsideBounds() {
+        if (clockContainer.getWidth() <= 0 || root.getWidth() <= 0) return;
+        float tx = clockContainer.getTranslationX();
+        float ty = clockContainer.getTranslationY();
+        float cx = clamp(tx, maxShiftX());
+        float cy = clamp(ty, maxShiftY());
+        if (cx != tx || cy != ty) {
+            clockContainer.animate().cancel();
+            clockContainer.setTranslationX(cx);
+            clockContainer.setTranslationY(cy);
+        }
+    }
+
     private void maybeShift() {
-        if (!Prefs.burnIn(ctx)) return;
+        boolean drift = Prefs.burnIn(ctx);
+        boolean flip = Prefs.flipClockOnMove(ctx);
+        if (!drift && !flip) return;
         long nowMs = System.currentTimeMillis();
         if (nowMs - lastShiftMs < Prefs.burnInterval(ctx) * 1000L) return;
         lastShiftMs = nowMs;
+
+        if (flip) {
+            clockFlipped = !clockFlipped;
+            applyLayoutPosition();
+        }
+        if (!drift) {
+            clockContainer.setTranslationX(0);
+            clockContainer.setTranslationY(0);
+            return;
+        }
         int dist = Prefs.burnDistance(ctx);
         if (dist <= 0) return;
         float density = ctx.getResources().getDisplayMetrics().density;
-        float dx = (random.nextInt(dist * 2 + 1) - dist) * density;
-        float dy = (random.nextInt(dist * 2 + 1) - dist) * density;
+        // Random drift, clamped to the safe on-screen range on each axis —
+        // on a full screen (e.g. landscape with clock + weather + chart)
+        // there may be no slack at all, and the face simply stays centred.
+        float dx = clamp((random.nextInt(dist * 2 + 1) - dist) * density, maxShiftX());
+        float dy = clamp((random.nextInt(dist * 2 + 1) - dist) * density, maxShiftY());
         clockContainer.animate().translationX(dx).translationY(dy)
                 .setDuration(1200).start();
     }

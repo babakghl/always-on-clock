@@ -856,6 +856,26 @@
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Swap clock position at each burn-in move (top ↔ bottom in portrait, left ↔ right in landscape; weather stays in the middle)"
+                        android:textColor="#F5F5F5"
+                        android:textSize="17sp" />
+
+                    <Switch
+                        android:id="@+id/swFlipClock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/burnDistLabel"
                     android:layout_width="wrap_content"

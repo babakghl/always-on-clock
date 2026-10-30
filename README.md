@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/github/license/babakghl/always-on-clock)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/babakghl/always-on-clock)](https://github.com/babakghl/always-on-clock/stargazers)
 
-**[⬇ Download the APK](https://github.com/babakghl/always-on-clock/releases/download/v5.1/AlwaysOnClock.apk)** — Android 8.0+ · Free · No ads · No tracking
+**[⬇ Download the APK](https://github.com/babakghl/always-on-clock/releases/download/v5.2/AlwaysOnClock.apk)** — Android 8.0+ · Free · No ads · No tracking
 
 A highly customisable always-on display (AOD) clock for Android — big readable time, date, battery and a live weather forecast, designed to sit on a nightstand or desk.
 
@@ -27,7 +27,7 @@ A highly customisable always-on display (AOD) clock for Android — big readable
 - **Screen-saver mode** — set Always On Clock as your Android screen saver and it takes over when the phone idles while charging or docked — the closest an app can get to replacing the built-in AOD
 - **Charging-only mode** — the clock shows only while plugged in and exits when you unplug; Settings stay reachable any time (open the app, or use the ⚙ on the screen saver / the notification's Settings action)
 - **Background status notification** — a persistent notification shows the clock is running, with the time and current weather; it also keeps the forecast fresh
-- **Burn-in protection** — the clock face drifts by an adjustable distance (0–60 dp) at an adjustable interval (30 s – 5 min)
+- **Burn-in protection** — the clock face drifts by an adjustable distance (0–60 dp) at an adjustable interval (30 s – 5 min), always clamped so the whole face stays on screen; optionally, the clock can also swap ends at each move (top ↔ bottom in portrait, left ↔ right in landscape, weather stays in the middle)
 - **Appearance** — clock size, clock and background colours, 6 fonts, bold text, in-app brightness
 - **Orientation lock** — auto, portrait, or landscape
 - No ads, no tracking, no account

@@ -341,6 +341,7 @@ public class SettingsActivity extends Activity {
 
         // --- Display & behaviour extras ---
         bindSwitch(sp, R.id.swOnlyCharging, Prefs.KEY_ONLY_CHARGING, Prefs.onlyCharging(this));
+        bindSwitch(sp, R.id.swFlipClock, Prefs.KEY_FLIP_CLOCK, Prefs.flipClockOnMove(this));
 
         Spinner spOrientation = findViewById(R.id.spOrientation);
         String[] orientNames = {"Auto (system)", "Portrait", "Landscape"};
