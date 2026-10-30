@@ -298,6 +298,7 @@ public class ClockFace {
 
         int wxColor = Prefs.wxColor(ctx);
         float wxSize = Prefs.wxSize(ctx);
+        float wxCurrentSize = Prefs.wxCurrentSize(ctx);
         Typeface tf = typeface();
         String deg = m.unit.equals("f") ? "°F" : "°C";
         boolean useIcons = !Prefs.ICON_NONE.equals(Prefs.wxIconStyle(ctx));
@@ -314,8 +315,15 @@ public class ClockFace {
                 if (Prefs.wxShowCurrent(ctx)) sb.append(" · ");
                 sb.append(WeatherStore.kindLabel(m.currentKind));
             }
-            sb.append("  ·  ").append(shortPlace(Prefs.wxPlaceName(ctx)));
-            weatherContainer.addView(wxText(sb.toString(), wxColor, wxSize, tf, 0));
+            weatherContainer.addView(wxText(sb.toString(), wxColor, wxCurrentSize, tf, 0));
+        }
+
+        // Location name on its own line (v5), toggleable
+        if (Prefs.wxShowLocation(ctx)) {
+            String place = Prefs.wxPlaceName(ctx);
+            if (place != null && !place.trim().isEmpty()) {
+                weatherContainer.addView(wxText(place.trim(), wxColor, wxSize, tf, 2));
+            }
         }
 
         int days = Math.min(Prefs.wxDays(ctx), m.names.length);
@@ -342,6 +350,22 @@ public class ClockFace {
             }
             weatherContainer.addView(wxText(sb.toString(), wxColor, wxSize, tf, 4));
         }
+
+        // Simple chart (v5): temp high/low lines + precipitation bars,
+        // for the same forecast days shown above.
+        if (Prefs.wxShowChart(ctx) && days > 0) {
+            float density = ctx.getResources().getDisplayMetrics().density;
+            int screenW = ctx.getResources().getDisplayMetrics().widthPixels;
+            int chartW = Math.min(Math.round(340 * density),
+                    Math.round(screenW * 0.92f));
+            WeatherChartView chart = new WeatherChartView(ctx);
+            chart.setData(m.names, m.max, m.min, m.pop, days, wxColor);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
+                    chartW, Math.round(132 * density));
+            cp.topMargin = Math.round(10 * density);
+            chart.setLayoutParams(cp);
+            weatherContainer.addView(chart);
+        }
     }
 
     private TextView wxText(String text, int color, float sizeSp, Typeface tf, int topDp) {
@@ -357,12 +381,6 @@ public class ClockFace {
         params.topMargin = Math.round(topDp * ctx.getResources().getDisplayMetrics().density);
         tv.setLayoutParams(params);
         return tv;
-    }
-
-    private String shortPlace(String place) {
-        if (place == null) return "";
-        int comma = place.indexOf(',');
-        return comma > 0 ? place.substring(0, comma) : place;
     }
 
     private void maybeShift() {

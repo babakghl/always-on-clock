@@ -1,0 +1,3 @@
+• New: location name now sits on its own line in the weather block, with a switch to turn it off
+• New: separate font-size slider for the current weather (the forecast lines keep their own size)
+• New: optional simple chart under the forecast — daily high/low temperature lines over precipitation-chance bars, for the same forecast days

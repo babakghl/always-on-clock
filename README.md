@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/github/license/babakghl/always-on-clock)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/babakghl/always-on-clock)](https://github.com/babakghl/always-on-clock/stargazers)
 
-**[⬇ Download the APK](https://github.com/babakghl/always-on-clock/releases/download/v4.0/AlwaysOnClock.apk)** — Android 8.0+ · Free · No ads · No tracking
+**[⬇ Download the APK](https://github.com/babakghl/always-on-clock/releases/download/v5.0/AlwaysOnClock.apk)** — Android 8.0+ · Free · No ads · No tracking
 
 A highly customisable always-on display (AOD) clock for Android — big readable time, date, battery and a live weather forecast, designed to sit on a nightstand or desk.
 
@@ -19,6 +19,7 @@ A highly customisable always-on display (AOD) clock for Android — big readable
 - **Weather forecast** — powered by [Open-Meteo](https://open-meteo.com) (free, no API key needed) or OpenWeatherMap (bring your own key)
   - 1–7 forecast days
   - Toggle each item: current temperature, condition, daily high, daily low, precipitation chance
+  - Location name on its own line (toggleable), a separate font size for the current weather, and an optional simple chart — high/low temperature lines over precipitation bars — for the same forecast days
   - City search or device location, °C/°F, adjustable refresh interval
   - Icon styles: emoji, simple symbols, or none
 - **Live preview** — the top of the Settings screen shows the clock and updates as you change options

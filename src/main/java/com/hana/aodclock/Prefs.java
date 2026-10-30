@@ -40,6 +40,10 @@ public class Prefs {
     public static final String KEY_WX_REFRESH_MIN = "wx_refresh_min";
     public static final String KEY_WX_SIZE = "wx_size";
     public static final String KEY_WX_COLOR = "wx_color";
+    // Weather display (v5)
+    public static final String KEY_WX_SHOW_LOCATION = "wx_show_location";
+    public static final String KEY_WX_CURRENT_SIZE = "wx_current_size";
+    public static final String KEY_WX_SHOW_CHART = "wx_show_chart";
     public static final String KEY_SERVICE = "service_enabled";
     public static final String KEY_WX_CACHE = "wx_cache";
     public static final String KEY_WX_CACHE_AT = "wx_cache_at";
@@ -246,6 +250,30 @@ public class Prefs {
 
     public static int wxColor(Context c) {
         return sp(c).getInt(KEY_WX_COLOR, Color.parseColor("#B3E5FC"));
+    }
+
+    // --- Weather display accessors (v5) ---
+
+    /** Location name shown on its own line in the weather block. */
+    public static boolean wxShowLocation(Context c) {
+        return sp(c).getBoolean(KEY_WX_SHOW_LOCATION, true);
+    }
+
+    /**
+     * Font size (sp) for the current-weather line only. Falls back to the
+     * forecast text size until the user sets it explicitly, so upgrading
+     * does not change the existing look.
+     */
+    public static int wxCurrentSize(Context c) {
+        if (sp(c).contains(KEY_WX_CURRENT_SIZE)) {
+            return sp(c).getInt(KEY_WX_CURRENT_SIZE, wxSize(c));
+        }
+        return wxSize(c);
+    }
+
+    /** Simple temp + precipitation chart for the forecast period. */
+    public static boolean wxShowChart(Context c) {
+        return sp(c).getBoolean(KEY_WX_SHOW_CHART, false);
     }
 
     public static boolean serviceEnabled(Context c) {

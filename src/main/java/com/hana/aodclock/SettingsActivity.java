@@ -143,6 +143,8 @@ public class SettingsActivity extends Activity {
         bindSwitch(sp, R.id.swWxMin, Prefs.KEY_WX_SHOW_MIN, Prefs.wxShowMin(this));
         bindSwitch(sp, R.id.swWxPrecip, Prefs.KEY_WX_SHOW_PRECIP, Prefs.wxShowPrecip(this));
         bindSwitch(sp, R.id.swWxFahrenheit, Prefs.KEY_WX_FAHRENHEIT, Prefs.wxFahrenheit(this));
+        bindSwitch(sp, R.id.swWxLocation, Prefs.KEY_WX_SHOW_LOCATION, Prefs.wxShowLocation(this));
+        bindSwitch(sp, R.id.swWxChart, Prefs.KEY_WX_SHOW_CHART, Prefs.wxShowChart(this));
 
         // Data source
         Spinner spWxSource = findViewById(R.id.spWxSource);
@@ -267,17 +269,37 @@ public class SettingsActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        // Weather text size (10..30 sp)
+        // Forecast / location text size (10..30 sp)
         TextView wxSizeLabel = findViewById(R.id.wxSizeLabel);
         SeekBar sbWxSize = findViewById(R.id.sbWxSize);
         sbWxSize.setProgress(Prefs.wxSize(this) - 10);
-        wxSizeLabel.setText("Weather text size: " + Prefs.wxSize(this) + "sp");
+        wxSizeLabel.setText("Forecast text size: " + Prefs.wxSize(this) + "sp");
         sbWxSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
                 int size = progress + 10;
-                wxSizeLabel.setText("Weather text size: " + size + "sp");
+                wxSizeLabel.setText("Forecast text size: " + size + "sp");
                 sp.edit().putInt(Prefs.KEY_WX_SIZE, size).apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar bar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar bar) { }
+        });
+
+        // Current weather text size (10..40 sp)
+        TextView wxCurrentSizeLabel = findViewById(R.id.wxCurrentSizeLabel);
+        SeekBar sbWxCurrentSize = findViewById(R.id.sbWxCurrentSize);
+        sbWxCurrentSize.setProgress(Prefs.wxCurrentSize(this) - 10);
+        wxCurrentSizeLabel.setText("Current weather size: " + Prefs.wxCurrentSize(this) + "sp");
+        sbWxCurrentSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+                int size = progress + 10;
+                wxCurrentSizeLabel.setText("Current weather size: " + size + "sp");
+                sp.edit().putInt(Prefs.KEY_WX_CURRENT_SIZE, size).apply();
             }
 
             @Override
@@ -682,6 +704,7 @@ public class SettingsActivity extends Activity {
         if (m == null) return;
         int wxColor = Prefs.wxColor(this);
         float wxSize = Math.max(9f, Prefs.wxSize(this) * 0.75f);
+        float wxCurrentSize = Math.max(9f, Prefs.wxCurrentSize(this) * 0.75f);
         String deg = m.unit.equals("f") ? "°F" : "°C";
         boolean useIcons = !Prefs.ICON_NONE.equals(Prefs.wxIconStyle(this));
         if (m.hasCurrent && (Prefs.wxShowCurrent(this) || Prefs.wxShowCondition(this))) {
@@ -696,7 +719,13 @@ public class SettingsActivity extends Activity {
                 if (Prefs.wxShowCurrent(this)) sb.append(" · ");
                 sb.append(WeatherStore.kindLabel(m.currentKind));
             }
-            pWx.addView(previewWxText(sb.toString(), wxColor, wxSize, tf));
+            pWx.addView(previewWxText(sb.toString(), wxColor, wxCurrentSize, tf));
+        }
+        if (Prefs.wxShowLocation(this)) {
+            String place = Prefs.wxPlaceName(this);
+            if (place != null && !place.trim().isEmpty()) {
+                pWx.addView(previewWxText(place.trim(), wxColor, wxSize, tf));
+            }
         }
         int days = Math.min(Prefs.wxDays(this), m.names.length);
         for (int i = 0; i < days; i++) {
@@ -717,6 +746,16 @@ public class SettingsActivity extends Activity {
                 sb.append("  💧").append(m.pop[i]).append("%");
             }
             pWx.addView(previewWxText(sb.toString(), wxColor, wxSize, tf));
+        }
+        if (Prefs.wxShowChart(this) && days > 0) {
+            float density = getResources().getDisplayMetrics().density;
+            WeatherChartView chart = new WeatherChartView(this);
+            chart.setData(m.names, m.max, m.min, m.pop, days, wxColor);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
+                    Math.round(230 * density), Math.round(72 * density));
+            cp.topMargin = Math.round(4 * density);
+            chart.setLayoutParams(cp);
+            pWx.addView(chart);
         }
     }
 

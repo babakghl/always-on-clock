@@ -9,6 +9,7 @@ CLOCK
 WEATHER
 • Forecast for 1–7 days, powered by Open-Meteo (free, no API key needed) or OpenWeatherMap (your own key)
 • Toggle each item: current temperature, condition, daily high, daily low, precipitation chance
+• Location name on its own line (toggleable), a separate font size for the current weather, and an optional chart of temperature and precipitation for the forecast days
 • City search or device location
 • Celsius or Fahrenheit, adjustable refresh interval
 • Icon styles: emoji, simple symbols, or none
