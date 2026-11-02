@@ -9,16 +9,16 @@ import android.util.TypedValue;
 import android.view.View;
 
 /**
- * Simple forecast chart (v5): one bar per day for precipitation chance
- * (0-100%) with the daily high/low temperature lines drawn over them,
- * for exactly the forecast days the text list is showing.
- * Pure Canvas drawing, no libraries.
+ * Simple forecast chart (v5): one bar per day for precipitation amount
+ * in millimetres (v5.3, previously chance %) with the daily high/low
+ * temperature lines drawn over them, for exactly the forecast days the
+ * text list is showing. Pure Canvas drawing, no libraries.
  */
 public class WeatherChartView extends View {
     private String[] names = new String[0];
     private double[] max = new double[0];
     private double[] min = new double[0];
-    private int[] pop = new int[0]; // percent, -1 = unavailable
+    private double[] precipMm = new double[0]; // mm, -1 = unavailable
     private int labelColor = Color.parseColor("#B3E5FC");
 
     private final Paint barPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -50,18 +50,18 @@ public class WeatherChartView extends View {
     }
 
     /** Supply the days to chart (already trimmed to the chosen forecast period). */
-    public void setData(String[] names, double[] max, double[] min, int[] pop,
+    public void setData(String[] names, double[] max, double[] min, double[] precipMm,
                         int days, int labelColor) {
         int n = Math.max(0, Math.min(days, names != null ? names.length : 0));
         this.names = new String[n];
         this.max = new double[n];
         this.min = new double[n];
-        this.pop = new int[n];
+        this.precipMm = new double[n];
         for (int i = 0; i < n; i++) {
             this.names[i] = names[i];
             this.max[i] = max[i];
             this.min[i] = min[i];
-            this.pop[i] = (pop != null && i < pop.length) ? pop[i] : -1;
+            this.precipMm[i] = (precipMm != null && i < precipMm.length) ? precipMm[i] : -1;
         }
         this.labelColor = labelColor;
         invalidate();
@@ -91,7 +91,7 @@ public class WeatherChartView extends View {
         textPaint.setTextSize(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
         textPaint.setTextAlign(Paint.Align.LEFT);
-        String legend = "— High   — Low   ■ Precip %";
+        String legend = "— High   — Low   ■ Precip mm";
         canvas.drawText(legend, left, legendH - 4 * density, textPaint);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
@@ -106,22 +106,27 @@ public class WeatherChartView extends View {
         tMax += pad;
         tMin -= pad;
 
-        // Precipitation bars (behind the temp lines)
+        // Precipitation bars in mm (behind the temp lines), scaled to the
+        // wettest day shown, with a 5 mm minimum scale so a mostly dry
+        // week doesn't turn one shower into a full-height bar.
+        double mmMax = 0;
+        for (int i = 0; i < n; i++) mmMax = Math.max(mmMax, precipMm[i]);
+        double mmScale = Math.max(5.0, mmMax);
         float barW = Math.min(slot * 0.52f, 30 * density);
         for (int i = 0; i < n; i++) {
-            if (pop[i] < 0) continue;
+            if (precipMm[i] < 0) continue;
             float cx = left + slot * (i + 0.5f);
-            float barH = plotH * Math.max(0, Math.min(100, pop[i])) / 100f;
+            float barH = (float) (plotH * precipMm[i] / mmScale);
             if (barH > 0.5f) {
                 canvas.drawRect(cx - barW / 2f, plotBottom - barH,
                         cx + barW / 2f, plotBottom, barPaint);
             }
-            if (pop[i] > 0) {
+            if (precipMm[i] > 0) {
                 textPaint.setColor(Color.parseColor("#90CAF9"));
                 textPaint.setTextSize(TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP, 9,
                         getResources().getDisplayMetrics()));
-                canvas.drawText(pop[i] + "%", cx,
+                canvas.drawText(formatMm(precipMm[i]), cx,
                         plotBottom - barH - 2 * density, textPaint);
             }
         }
@@ -142,6 +147,13 @@ public class WeatherChartView extends View {
             String name = (i == 0) ? "Today" : names[i];
             canvas.drawText(name, cx, h - 3 * density, textPaint);
         }
+    }
+
+    /** 2.4 under 10 mm, whole numbers at/above 10 mm. */
+    private static String formatMm(double mm) {
+        if (mm >= 10) return String.valueOf(Math.round(mm));
+        double r = Math.round(mm * 10) / 10.0;
+        return (r == Math.floor(r)) ? String.valueOf((long) r) : String.valueOf(r);
     }
 
     private void drawTempLine(Canvas canvas, double[] vals, boolean isMax,

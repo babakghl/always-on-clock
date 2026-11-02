@@ -70,6 +70,7 @@ public class WeatherStore {
         public double[] max = new double[0];
         public double[] min = new double[0];
         public int[] pop = new int[0]; // percent, -1 = unavailable
+        public double[] precipMm = new double[0]; // mm per day, -1 = unavailable
     }
 
     // ---------- cache ----------
@@ -92,6 +93,7 @@ public class WeatherStore {
                 m.max = new double[n];
                 m.min = new double[n];
                 m.pop = new int[n];
+                m.precipMm = new double[n];
                 for (int i = 0; i < n; i++) {
                     JSONObject d = days.getJSONObject(i);
                     m.names[i] = d.optString("name", "");
@@ -99,6 +101,7 @@ public class WeatherStore {
                     m.max[i] = d.optDouble("max", 0);
                     m.min[i] = d.optDouble("min", 0);
                     m.pop[i] = d.optInt("pop", -1);
+                    m.precipMm[i] = d.optDouble("mm", -1);
                 }
             }
             return m;
@@ -114,6 +117,17 @@ public class WeatherStore {
     public static boolean isStale(Context ctx) {
         long at = cacheTime(ctx);
         if (at == 0) return true;
+        // Caches written before v5.3 have no per-day precipitation mm —
+        // treat them as stale so the chart gets mm data on the next tick.
+        try {
+            String raw = Prefs.sp(ctx).getString(Prefs.KEY_WX_CACHE, null);
+            if (raw != null) {
+                JSONArray days = new JSONObject(raw).optJSONArray("days");
+                if (days != null && days.length() > 0
+                        && !days.getJSONObject(0).has("mm")) return true;
+            }
+        } catch (Exception ignored) {
+        }
         // Also stale if the cached unit no longer matches the preference
         Model m = load(ctx);
         String wantUnit = Prefs.wxFahrenheit(ctx) ? "f" : "c";
@@ -161,7 +175,7 @@ public class WeatherStore {
         String url = "https://api.open-meteo.com/v1/forecast"
                 + "?latitude=" + lat + "&longitude=" + lon
                 + "&current=temperature_2m,weather_code"
-                + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+                + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum"
                 + "&forecast_days=7&timezone=auto"
                 + (fahrenheit ? "&temperature_unit=fahrenheit" : "");
         JSONObject root = new JSONObject(httpGet(url));
@@ -181,6 +195,7 @@ public class WeatherStore {
             JSONArray tmax = daily.optJSONArray("temperature_2m_max");
             JSONArray tmin = daily.optJSONArray("temperature_2m_min");
             JSONArray pop = daily.optJSONArray("precipitation_probability_max");
+            JSONArray psum = daily.optJSONArray("precipitation_sum");
             JSONArray days = new JSONArray();
             int n = time != null ? time.length() : 0;
             for (int i = 0; i < n; i++) {
@@ -192,6 +207,9 @@ public class WeatherStore {
                 int p = -1;
                 if (pop != null && !pop.isNull(i)) p = (int) Math.round(pop.optDouble(i, -1));
                 d.put("pop", p);
+                double mm = -1;
+                if (psum != null && !psum.isNull(i)) mm = psum.optDouble(i, -1);
+                d.put("mm", mm);
                 days.put(d);
             }
             out.put("days", days);
@@ -231,6 +249,12 @@ public class WeatherStore {
                 d.put("min", temp != null ? temp.optDouble("min", 0) : 0);
                 double popFrac = src.optDouble("pop", -1);
                 d.put("pop", popFrac < 0 ? -1 : (int) Math.round(popFrac * 100));
+                // OpenWeatherMap reports rain/snow volume in mm
+                if (src.has("rain") || src.has("snow")) {
+                    d.put("mm", src.optDouble("rain", 0) + src.optDouble("snow", 0));
+                } else {
+                    d.put("mm", 0);
+                }
                 days.put(d);
             }
             out.put("days", days);

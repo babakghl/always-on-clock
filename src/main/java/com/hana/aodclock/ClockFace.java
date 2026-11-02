@@ -358,19 +358,19 @@ public class ClockFace {
         String deg = m.unit.equals("f") ? "°F" : "°C";
         boolean useIcons = !Prefs.ICON_NONE.equals(Prefs.wxIconStyle(ctx));
 
-        if (m.hasCurrent && (Prefs.wxShowCurrent(ctx) || Prefs.wxShowCondition(ctx))) {
-            StringBuilder sb = new StringBuilder();
-            if (Prefs.wxShowCondition(ctx) && useIcons) {
-                sb.append(WeatherStore.kindIcon(ctx, m.currentKind)).append(" ");
+        if (m.hasCurrent && Prefs.wxShowCurrent(ctx)) {
+            // Current temperature on its own line, at the current size
+            weatherContainer.addView(wxText(
+                    Math.round(m.currentTemp) + deg, wxColor, wxCurrentSize, tf, 0));
+        }
+        if (m.hasCurrent && Prefs.wxShowCondition(ctx)) {
+            // Condition on its own line (v5.3), at the forecast (days) size
+            String cond = WeatherStore.kindLabel(m.currentKind);
+            if (useIcons) {
+                String icon = WeatherStore.kindIcon(ctx, m.currentKind);
+                if (!icon.isEmpty()) cond = icon + " " + cond;
             }
-            if (Prefs.wxShowCurrent(ctx)) {
-                sb.append(Math.round(m.currentTemp)).append(deg);
-            }
-            if (Prefs.wxShowCondition(ctx)) {
-                if (Prefs.wxShowCurrent(ctx)) sb.append(" · ");
-                sb.append(WeatherStore.kindLabel(m.currentKind));
-            }
-            weatherContainer.addView(wxText(sb.toString(), wxColor, wxCurrentSize, tf, 0));
+            weatherContainer.addView(wxText(cond, wxColor, wxSize, tf, 2));
         }
 
         // Location name on its own line (v5), toggleable
@@ -411,7 +411,7 @@ public class ClockFace {
         // Position comes from applyLayoutPosition(): below the weather in
         // portrait, to the right of it in landscape.
         if (Prefs.wxShowChart(ctx) && days > 0) {
-            chartView.setData(m.names, m.max, m.min, m.pop, days, wxColor);
+            chartView.setData(m.names, m.max, m.min, m.precipMm, days, wxColor);
             chartView.setVisibility(View.VISIBLE);
         } else {
             chartView.setVisibility(View.GONE);

@@ -1,0 +1,2 @@
+• The current-weather condition (e.g. "Partly cloudy", with its icon) now sits on its own line under the temperature, at the same font size as the forecast days
+• The chart's precipitation bars now show the amount in millimetres instead of the chance percentage — bars are scaled to the wettest day shown and labelled in mm (the forecast text lines still show the chance %)

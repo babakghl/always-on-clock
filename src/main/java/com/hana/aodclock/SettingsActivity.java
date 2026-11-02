@@ -683,19 +683,17 @@ public class SettingsActivity extends Activity {
         float wxCurrentSize = Math.max(9f, Prefs.wxCurrentSize(this) * 0.75f);
         String deg = m.unit.equals("f") ? "°F" : "°C";
         boolean useIcons = !Prefs.ICON_NONE.equals(Prefs.wxIconStyle(this));
-        if (m.hasCurrent && (Prefs.wxShowCurrent(this) || Prefs.wxShowCondition(this))) {
-            StringBuilder sb = new StringBuilder();
-            if (Prefs.wxShowCondition(this) && useIcons) {
-                sb.append(WeatherStore.kindIcon(this, m.currentKind)).append(" ");
+        if (m.hasCurrent && Prefs.wxShowCurrent(this)) {
+            pWx.addView(previewWxText(
+                    Math.round(m.currentTemp) + deg, wxColor, wxCurrentSize, tf));
+        }
+        if (m.hasCurrent && Prefs.wxShowCondition(this)) {
+            String cond = WeatherStore.kindLabel(m.currentKind);
+            if (useIcons) {
+                String icon = WeatherStore.kindIcon(this, m.currentKind);
+                if (!icon.isEmpty()) cond = icon + " " + cond;
             }
-            if (Prefs.wxShowCurrent(this)) {
-                sb.append(Math.round(m.currentTemp)).append(deg);
-            }
-            if (Prefs.wxShowCondition(this)) {
-                if (Prefs.wxShowCurrent(this)) sb.append(" · ");
-                sb.append(WeatherStore.kindLabel(m.currentKind));
-            }
-            pWx.addView(previewWxText(sb.toString(), wxColor, wxCurrentSize, tf));
+            pWx.addView(previewWxText(cond, wxColor, wxSize, tf));
         }
         if (Prefs.wxShowLocation(this)) {
             String place = Prefs.wxPlaceName(this);
@@ -726,7 +724,7 @@ public class SettingsActivity extends Activity {
         if (Prefs.wxShowChart(this) && days > 0) {
             float density = getResources().getDisplayMetrics().density;
             WeatherChartView chart = new WeatherChartView(this);
-            chart.setData(m.names, m.max, m.min, m.pop, days, wxColor);
+            chart.setData(m.names, m.max, m.min, m.precipMm, days, wxColor);
             LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(
                     Math.round(230 * density), Math.round(72 * density));
             cp.topMargin = Math.round(4 * density);
