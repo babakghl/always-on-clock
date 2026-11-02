@@ -24,9 +24,9 @@ RepoType: git
 Repo: https://github.com/babakghl/always-on-clock.git
 
 Builds:
-  - versionName: '5.2'
-    versionCode: 7
-    commit: f3b22b0701e10b83116d3949b9a4a18bb23483ee
+  - versionName: '5.3'
+    versionCode: 8
+    commit: 7587608735138fffe365730c8d8c472e3fbe538b
     build:
       - export JAVA_HOME=$(ls -d /usr/lib/jvm/java-17-openjdk-* 2>/dev/null | head -n 1)
       - export ANDROID_SDK=$$SDK$$
@@ -35,5 +35,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '5.2'
-CurrentVersionCode: 7
+CurrentVersion: '5.3'
+CurrentVersionCode: 8
